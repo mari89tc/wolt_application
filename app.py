@@ -118,7 +118,7 @@ def view_partner():
     user = session.get("user")
     if len(user.get("roles", "")) > 1:
         return redirect(url_for("view_choose_role"))
-    return response
+    return render_template("view_partner.html", user=user)
 
 
 ##############################
@@ -133,7 +133,6 @@ def view_admin():
     return render_template("view_admin.html", user=user)
 
 
-
 ##############################
 @app.get("/choose-role")
 @x.no_cache
@@ -144,6 +143,31 @@ def view_choose_role():
         return redirect(url_for("view_login"))
     user = session.get("user")
     return render_template("view_choose_role.html", user=user, title="Choose role")
+
+
+##############################
+@app.get("/forgot-password")
+@x.no_cache
+def view_forgot_password():
+    return render_template("view_forgot_password.html", x=x, title="Forgot password")
+
+
+##############################
+@app.get("/reset-password")
+@x.no_cache
+def view_reset_password():
+    return render_template("view_reset_password.html", x=x, title="Reset password")
+
+
+##############################
+@app.get("/restaurants")
+@x.no_cache
+def view_restaurants():
+    return render_template("view_restaurants.html", x=x, title="Restaurants")
+
+
+##############################
+@app.get("/")
 
 
 ##############################
@@ -180,11 +204,11 @@ def signup():
         hashed_password = generate_password_hash(user_password)
 
         # Get roles, which may come in as multiple entries for the same key
-        roles = request.form.getlist('roles')  # "getlist" will return a(n) list/array
-        ic("Received roles:", roles)
-        if not roles:
-            toast = render_template("___toast.html", message="Error: At least one role must be selected")
-            return f"<template mix-target='#toast' mix-bottom>{toast}</template>", 400
+        # roles = request.form.getlist('roles')  # "getlist" will return a(n) list/array
+        # ic("Received roles:", roles)
+        # if not roles:
+        #     toast = render_template("___toast.html", message="Error: At least one role must be selected")
+        #     return f"<template mix-target='#toast' mix-bottom>{toast}</template>", 400
 
         user_pk = str(uuid.uuid4())
         user_avatar = ""
@@ -203,16 +227,16 @@ def signup():
 
         # SANTAIGO, is this part necessary
         # Validate roles exist
-        for role_value in roles:
-            q_validate_role = 'SELECT role_pk FROM roles WHERE role_pk = %s'
-            cursor.execute(q_validate_role, (role_value,))
-            if cursor.fetchone() is None:
-                return f"<template>Error: Role '{role_value}' does not exist</template>", 400
+        # for role_value in roles:
+        #     q_validate_role = 'SELECT role_pk FROM roles WHERE role_pk = %s'
+        #     cursor.execute(q_validate_role, (role_value,))
+        #     if cursor.fetchone() is None:
+        #         return f"<template>Error: Role '{role_value}' does not exist</template>", 400
 
         # Insert into users_roles in db (junction table)
-        for role_value in roles:
-            q_role = 'INSERT INTO users_roles (user_role_user_fk, user_role_role_fk) VALUES (%s, %s)'
-            cursor.execute(q_role, (user_pk, role_value))
+        # for role_value in roles:
+        #     q_role = 'INSERT INTO users_roles (user_role_user_fk, user_role_role_fk) VALUES (%s, %s)'
+        #     cursor.execute(q_role, (user_pk, role_value))
 
         # x.send_verify_email(user_email, user_verification_key)
         db.commit()
@@ -315,6 +339,104 @@ def create_item():
     finally:
         if "cursor" in locals(): cursor.close()
         if "db" in locals(): db.close()    
+
+
+##############################
+@app.post("/forgot-password")
+def forgot_password():
+    try:
+        user_email = x.validate_user_email()
+        user_reset_key = str(uuid.uuid4())
+        user_updated_at = int(time.time())
+
+        db, cursor = x.db()
+        q = """ SELECT * FROM users 
+                WHERE user_email = %s"""
+        cursor.execute(q, (user_email,))
+        rows = cursor.fetchall()
+
+        if not rows:
+            toast = render_template("___toast.html", message="user not registered")
+            return f"""<template mix-target="#toast">{toast}</template>""", 400 
+
+        q = """UPDATE users SET `user_reset_key` = %s, `user_updated_at` = %s  WHERE `user_email` = %s"""
+        cursor.execute(q, (user_reset_key, user_updated_at, user_email))
+        db.commit()
+        
+        x.send_new_password_email(user_email, user_reset_key)
+
+        return f"""<template mix-redirect="/reset-password"></template>"""
+        # return f"""<template mix-target="#info_text" mix-replace><p class="bg-c-green:-10 pa-4 rounded-md text-c-white">E-mail send. Follow the e-mail for changing your password</p></template>"""
+
+    except Exception as ex:
+        ic(ex)
+        if "db" in locals(): db.rollback()
+
+        # My own exception
+        if isinstance(ex, x.CustomException):
+            return f"""<template mix-target="#toast" mix-bottom>{ex.message}</template>""", ex.code
+        
+        # Database exception
+        if isinstance(ex, x.mysql.connector.Error):
+            ic(ex)
+            if "users.user_email" in str(ex):
+                return """<template mix-target="#toast" mix-bottom>email not available</template>""", 400
+            return "<template>System upgrading</template>", 500  
+    
+        # Any other exception
+        return """<template mix-target="#toast" mix-bottom>System under maintenance</template>""", 500  
+        
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()
+
+
+##############################
+@app.post("/reset-password")
+def reset_password():
+    try:
+        user_reset_key = x.validate_uuid4(request.form.get("user_reset_key", "").strip())
+        user_password = x.validate_user_password()
+        hashed_password = generate_password_hash(user_password)
+        user_updated_at = int(time.time())
+
+        db, cursor =x.db()
+
+        # q = 'UPDATE users SET `user_password`=%s, `user_updated_at` = %s WHERE `user_reset_key` = %s'
+        # cursor.execute(q, (hashed_password, user_updated_at, user_reset_key))
+        q = 'UPDATE users SET `user_password`=%s, `user_updated_at` = %s WHERE `user_reset_key` = %s'
+        cursor.execute(q, (hashed_password, user_updated_at, user_reset_key))
+        rows_affected = cursor.rowcount
+
+        if rows_affected < 1:
+            toast = render_template("___toast.html", message="Invalid password reset-key")
+            return f"""<template mix-target="#toast">{toast}</template>""", 400 
+
+        db.commit()
+
+        return f"""<template mix-redirect="/login"></template>"""
+
+    except Exception as ex:
+        ic(ex)
+        if "db" in locals(): db.rollback()
+
+        # My own exception
+        if isinstance(ex, x.CustomException):
+            return f"""<template mix-target="#toast" mix-bottom>{ex.message}</template>""", ex.code
+        
+        # Database exception
+        if isinstance(ex, x.mysql.connector.Error):
+            ic(ex)
+            if "users.user_email" in str(ex):
+                return """<template mix-target="#toast" mix-bottom>email not available</template>""", 400
+            return "<template>System upgrading</template>", 500  
+    
+        # Any other exception
+        return """<template mix-target="#toast" mix-bottom>System under maintenance</template>""", 500  
+        
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()
 
 
 ##############################
