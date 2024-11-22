@@ -123,6 +123,75 @@ def validate_uuid4(uuid4 = ""):
     return uuid4
 
 ##############################
+RESTAURANT_NAME_MIN = 2
+RESTAURANT_NAME_MAX = 20
+RESTAURANT_NAME_REGEX = f"^.{{{RESTAURANT_NAME_MIN},{RESTAURANT_NAME_MAX}}}$"
+def validate_restaurant_name():
+    error = f"name {RESTAURANT_NAME_MIN} to {RESTAURANT_NAME_MAX} characters"
+    restaurant_name = request.form.get("restaurant_name", "").strip()
+    if not re.match(RESTAURANT_NAME_REGEX, restaurant_name): raise_custom_exception(error, 400)
+    return restaurant_name
+
+##############################
+RESTAURANT_ADRESS_MIN = 2
+RESTAURANT_ADRESS_MAX = 55
+RESTAURANT_ADRESS_REGEX = f"^.{{{RESTAURANT_ADRESS_MIN},{RESTAURANT_ADRESS_MAX}}}$"
+def validate_restaurant_adress():
+    error = f"name {RESTAURANT_ADRESS_MIN} to {RESTAURANT_ADRESS_MAX} characters"
+    restaurant_adress = request.form.get("restaurant_adress", "").strip()
+    if not re.match(RESTAURANT_ADRESS_REGEX, restaurant_adress): raise_custom_exception(error, 400)
+    return restaurant_adress
+
+##############################
+REGEX_EMAIL = "^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+def validate_restaurant_email():
+    error = "email invalid"
+    restaurant_email = request.form.get("restaurant_email", "").strip()
+    if not re.match(REGEX_EMAIL, restaurant_email): raise_custom_exception(error, 400)
+    return restaurant_email
+
+##############################
+RESTAURANT_PASSWORD_MIN = 8
+RESTAURANT_PASSWORD_MAX = 50
+REGEX_RESTAURANT_PASSWORD = f"^.{{{RESTAURANT_PASSWORD_MIN},{RESTAURANT_PASSWORD_MAX}}}$"
+def validate_restaurant_password():
+    error = f"password {RESTAURANT_PASSWORD_MIN} to {RESTAURANT_PASSWORD_MAX} characters"
+    restaurant_password = request.form.get("restaurant_password", "").strip()
+    if not re.match(REGEX_RESTAURANT_PASSWORD, restaurant_password): raise_custom_exception(error, 400)
+    return restaurant_password
+
+##############################
+ITEM_TITLE_MIN = 2
+ITEM_TITLE_MAX = 50
+REGEX_ITEM_TITLE = f"^.{{{ITEM_TITLE_MIN}, {ITEM_TITLE_MAX}}}$"
+def validate_item_title():
+    error = f"Title {ITEM_TITLE_MIN} to {ITEM_TITLE_MAX} characters"
+    item_title = request.form.get("item_title", "").strip()
+    if not re.match(REGEX_ITEM_TITLE, item_title): raise_custom_exception(error, 400)
+    return item_title
+
+##############################
+ITEM_DESCRIPTION_MIN = 2
+ITEM_DESCRIPTION_MAX = 200
+REGEX_ITEM_DESCRIPTION = f"^.{{{ITEM_DESCRIPTION_MIN}, {ITEM_DESCRIPTION_MAX}}}$"
+def validate_item_description():
+    error = f"Description {ITEM_DESCRIPTION_MIN} to {ITEM_DESCRIPTION_MAX} characters"
+    item_description = request.form.get("item_description", "").strip()
+    if not re.match(REGEX_ITEM_DESCRIPTION, item_description): raise_custom_exception(error, 400)
+    return item_description
+
+##############################
+ITEM_PRICE_MIN = 0
+ITEM_PRICE_MAX = 99999
+REGEX_ITEM_PRICE = f"^.{{{ITEM_PRICE_MIN}, {ITEM_PRICE_MAX}}}$"
+def validate_item_price():
+    error = f"Price must be {ITEM_PRICE_MIN} to {ITEM_PRICE_MAX} decimals"
+    item_price = request.form.get("item_price", "").strip()
+    if not re.match(REGEX_ITEM_PRICE, item_price): raise_custom_exception(error, 400)
+    return item_price
+
+
+##############################
 UPLOAD_ITEM_FOLDER = './images'
 ALLOWED_ITEM_FILE_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
@@ -139,21 +208,20 @@ def validate_item_image():
         filename = str(uuid.uuid4()) + file_extension
         return file, filename 
 
-
 ##############################
 def send_verify_email(to_email, user_verification_key):
     try:
         # Create a gmail fullflaskdemomail
         # Enable (turn on) 2 step verification/factor in the google account manager
         # Visit: https://myaccount.google.com/apppasswords
-        # Our key/password: gvzplqajyxalzyhv 
+        # Our key/password: azjmqclantfsriud
 
         # Email and password of the sender's Gmail account
-        sender_email = "fullflaskdemomail@gmail.com"
-        password = "YOUR_KEY_HERE"  # If 2FA is on, use an App Password instead
+        sender_email = "fulldemoexam@gmail.com"
+        password = "azjmqclantfsriud"  # If 2FA is on, use an App Password instead
 
         # Receiver email address
-        receiver_email = "fullflaskdemomail@gmail.com"
+        receiver_email = "fulldemoexam@gmail.com"
         
         # Create the email message
         message = MIMEMultipart()
@@ -179,6 +247,44 @@ def send_verify_email(to_email, user_verification_key):
     finally:
         pass
 
+##############################
+def send_new_password_email(user_email, user_reset_key):
+    try:
+        # Create a gmail
+        # Enable (turn on) 2 step verification/factor in the google account manager
+        # Visit: https://myaccount.google.com/apppasswords
+        # Copy the key : wdwr rqrx wllv gtcu OLD
+        # Copy the key : xbhw jbez dxvw mtfa  NEW
 
+        # Email and password of the sender's Gmail account
+        sender_email = "fullflaskdemomailexam@gmail.com"
+        password = "gvzplqajyxalzyhv"  # If 2FA is on, use an App Password instead
 
+        # Receiver email address - Right now set to be my own
+        receiver_email = "fullflaskdemomailexam@gmail.com"
+        # receiver_email = user_email # if it was a real scenario
+        
+        # Create the email message
+        message = MIMEMultipart()
+        message["From"] = "My company name"
+        message["To"] = receiver_email
+        message["Subject"] = "Change your password"
 
+        # Body of the email
+        # body = f"To change your password for your account, please <a href='http://127.0.0.1/change-password/{user_reset_key}'>click here</a>"
+        body = f"Your password reset-key: {user_reset_key}"
+        message.attach(MIMEText(body, "html"))
+
+        # Connect to Gmail's SMTP server and send the email
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()  # Upgrade the connection to secure
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+        print("Email sent successfully!")
+
+        return "email sent"
+
+    except Exception as ex:
+        raise_custom_exception("Email can't send", 500)
+    finally:
+        pass

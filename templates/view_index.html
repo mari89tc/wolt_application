@@ -4,21 +4,18 @@
     <section class="d-flex flex-row">
         <img src="../static/assets/dish_35.jpg" alt="" class="w-96">
         <div class="ma-8 d-flex flex-col">
-            <h1 class="text-(6rem)">Hi!</h1>
+            <h1 class="text-(6rem) text-a-center">Hi!</h1>
             <h2 class="text-(5rem)">Welcome to Delivr</h2>
-            <legend class="a-self-center text-(1.2rem)">Choose what role you want to sign up as here!</legend>
-                <div class="d-flex j-content-around">
+            <legend class="a-self-center text-(1.2rem) pb-6">Choose what role you want to sign up as here!</legend>
+                <div id="chooseRole" class="d-flex j-content-center gap-9">
                     <div class="gap-2 d-flex flex-col j-self-center">
-                        <input type="checkbox" id="customer" name="roles" value="c56a4180-65aa-42ec-a945-5fd21dec0538">
-                        <label for="customer">Customer</label>
+                        <a id="customer" href="/signup?id=c56a4180-65aa-42ec-a945-5fd21dec0538">Customer</a>
                     </div>
                     <div class="gap-2 d-flex flex-col j-self-center">
-                        <input type="checkbox" id="partner" name="roles" value="f47ac10b-58cc-4372-a567-0e02b2c3d479">
-                        <label for="partner">Partner</label>
+                        <a id="partner" href="/signup?id=f47ac10b-58cc-4372-a567-0e02b2c3d479">Partner</a>
                     </div>
                     <div class="gap-2 d-flex flex-col j-self-center">
-                        <input type="checkbox" id="restaurant" name="roles" value="9f8c8d22-5a67-4b6c-89d7-58f8b8cb4e15">
-                        <label for="restaurant">Restaurant</label>
+                        <a id="restaurant" href="/signup?id=9f8c8d22-5a67-4b6c-89d7-58f8b8cb4e15">Restaurant</a>
                     </div>
                 </div>
         </div>
