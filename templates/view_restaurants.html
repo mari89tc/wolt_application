@@ -4,6 +4,12 @@
     <div id="map" class="w-full h-100vh"></div>
     
     <div id="items" class="w-full h-100vh">
+        <h2>Browse through all restaurants</h2>
+        {% for user in users %}
+            <!-- <p>{{ user['user_name'] }}</p> -->
+
+            <!-- <p>{{ user['roles'] }}</p> -->
+        {% endfor %}
         <button class="px-20 py-4 rounded-sm" mix-get="/items/page/1">
             More
         </button>

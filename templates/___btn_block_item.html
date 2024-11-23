@@ -1,4 +1,7 @@
-<button id="block-{{ item['item_pk'] }}" mix-put="/items/block/{{ item['item_pk'] }}"
+<button 
+    id="block-{{ item['item_pk'] }}"
+    class="px-3 py-3 bg-c-(#FFFFFF) text-c-(#202125) text-(0.8rem) h-auto border-c-(#202125) border-2" 
+    mix-put="/items/block/{{ item['item_pk'] }}"
     mix-data="#frm_item_block-{{ item['item_pk'] }}">
     Block
 </button>

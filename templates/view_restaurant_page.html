@@ -6,15 +6,12 @@
 
         <form id="frm_create_item" class="w-75% d-flex flex-col gap-4 mx-auto">
             
-            <div class="text-c-green text-200">
-                {{ message }}
-            </div>
             <div class="d-flex flex-col">
                 <label for="item_title" class="d-flex">
                     <span>Title</span>
                     <span class="ml-auto text-c-gray:+25">{{ x.ITEM_TITLE_MIN }} to {{ x.ITEM_TITLE_MAX }} characters</span>
                 </label>
-                <input name="item_title" type="text" mix-check="{{ x.REGEX_ITEM_TITLE }}">
+                <input name="item_title" id="item_title" type="text" mix-check="{{ x.REGEX_ITEM_TITLE }}">
             </div>
 
             <div class="d-flex flex-col">
@@ -22,15 +19,15 @@
                     <span>Description</span>
                     <span class="ml-auto text-c-gray:+25">{{ x.ITEM_DESCRIPTION_MIN }} to {{ x.ITEM_DESCRIPTION_MAX }} characters</span>
                 </label>
-                <input name="item_description" type="text" mix-check="{{ x.REGEX_ITEM_DESCRIPTION }}">
+                <input name="item_description" id="item_description" type="text" mix-check="{{ x.REGEX_ITEM_DESCRIPTION }}">
             </div>
 
             <div class="d-flex flex-col">
                 <label for="item_price" class="d-flex">
                     <span>Price</span>
-                    <span class="ml-auto text-c-gray:+25">{{ x.ITEM_PRICE_MIN }} to {{ x.ITEM_PRICE_MAX }} decimals</span>
+                    <span class="ml-auto text-c-gray:+25">Max. {{x.PRICE_MAX_DECIMALS}} decimals</span>
                 </label>
-                <input name="item_price" type="text" mix-check="{{ x.REGEX_ITEM_PRICE }}">
+                <input name="item_price" id="item_price" type="text" mix-check="{{ x.PRICE_REGEX }}">
             </div>
 
             <div class="d-flex flex-col">
@@ -38,7 +35,8 @@
                     <span>Select an image:</span>
                     <span class="ml-auto text-c-gray:+25">Upload from {{ x.UPLOAD_ITEM_FOLDER }} folder</span>
                 </label>
-                <input name="item_image" type="file" mix-check="{{ x.ALLOWED_ITEM_FILE_EXTENSIONS }}">
+                <input type="file" name="files" multiple>
+                <input name="item_image" id="item_image" type="file" mix-check="{{ x.ALLOWED_ITEM_FILE_EXTENSIONS }}">
             </div>
 
             <button mix-post="/items" mix-data="#frm_create_item" class="bg-c-(#00C2E8) text-c-(#FFFFFF) px-4 py-2 rounded-3">Create item</button>
@@ -52,8 +50,7 @@
                 <input type="text" name="item_title" value="{{item['item_title']}}">
                 <input type="text" name="item_description" value="{{item['item_description']}}">
                 <input type="text" name="item_price" value="{{item['item_price']}}">
-                <!-- <input type="text" name="item_image" value="{{item['item_image']}}"> -->
-                <img class="w-10 h-10" src="/images/{{item['item_image']}}">
+                <img class="w-10 h-10" src="/dishes/{{item['item_image']}}">
                 <button mix-put="/items/{{item['item_pk']}}" mix-data="#frm_item_update-{{item['item_pk']}}" class="bg-c-(#EBF7FD) text-c-(#00C2E8) px-4 py-2 rounded-3">
                     Update item
                 </button>

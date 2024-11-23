@@ -1,10 +1,21 @@
 {% include "_top_logged.html" %}
 
-<h2>Hi {{ user['user_name'] }}</h2>
+<section class="d-flex flex-col a-items-center mt-20 mb-20">
+    <h2>Hi {{ user['user_name'] }}</h2>
+    <p>Update your profile here</p>
+    <form id="frm_user_update"> 
+        <input type="text" name="user_name" value="{{user['user_name']}}">
+        <input type="text" name="user_last_name" value="{{user['user_last_name']}}">
+        <input type="text" name="user_email" value="{{user['user_email']}}">
+        <button mix-put="/users" mix-data="#frm_user_update">
+            Update user
+        </button>
+    </form>
+</section>
 
 <div class="grid cols-2 ma-10">
     <section id="users" class="border-c-(#E4E4E4) border-r-2 pr-3">
-        <h3 class="text-a-center">All users</h3>
+        <h3 class="text-a-center text-c-(#00C2E8)">All users</h3>
         {% for user in users %}
         <div class="pb-2 pt-2 border-c-(#E4E4E4) border-b-2">
             <form id="frm_user_block-{{user['user_pk']}}" class="d-flex j-content-between">
@@ -12,11 +23,11 @@
                 <p>{{ user['user_email'] }}</p>
                 <div>
                     {% if user['user_verified_at'] != 0 %}
-                    {% if user['user_blocked_at'] == 0 %}
-                    {% include '___btn_block_user.html' %}
-                    {% else %}
-                    {% include '___btn_unblock_user.html' %}
-                    {% endif %}
+                        {% if user['user_blocked_at'] == 0 %}
+                            {% include '___btn_block_user.html' %}
+                        {% else %}
+                            {% include '___btn_unblock_user.html' %}
+                        {% endif %}
                     {% endif %}
                 </div>
             </form>
@@ -24,30 +35,20 @@
         {% endfor %}
     </section>
     <section>
-        <h3 class="text-a-center">All items</h3>
+        <h3 class="text-a-center text-c-(#00C2E8)">All items</h3>
         {% for item in items %}
         <div class="pb-2 pt-2 border-c-(#E4E4E4) border-b-2">
             <form id="frm_item_block-{{item['item_pk']}}" class="d-flex j-content-between">
                 <p>{{ item['item_title'] }}</p>
                 {% if item['item_blocked_at'] == 0 %}
-                {% include '___btn_block_item.html' %}
+                    {% include '___btn_block_item.html' %}
                 {% else %}
-                {% include '___btn_unblock_item.html' %}
+                    {% include '___btn_unblock_item.html' %}
                 {% endif %}
             </form>
         </div>
         {% endfor %}
     </section>
 </div>
-
-<!-- <form>
-    <input type="text" name="user_name" value="{{user['user_name']}}">
-    <input type="text" name="user_last_name" value="{{user['user_last_name']}}">
-    <input type="text" name="user_email" value="{{user['user_email']}}">
-    <button>
-        Update user
-    </button>
-
-</form> -->
 
 {% include "_bottom.html" %}

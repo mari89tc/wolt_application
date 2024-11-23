@@ -1,6 +1,7 @@
-<button
-    class="px-3 py-1 rounded-sm mr-2 h-10 cursor-pointer"
+<button 
     id="unblock-{{ user['user_pk'] }}"
-    mix-get="/users/unblock/{{ user['user_pk'] }}">
+    class="px-3 py-3 bg-c-(#202125) text-c-(#FFFFFF) text-(0.8rem) h-auto"
+    mix-put="/users/unblock/{{ user['user_pk'] }}"
+    mix-data="#frm_user_block-{{ user['user_pk'] }}">
     Unblock
 </button>

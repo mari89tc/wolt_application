@@ -123,47 +123,9 @@ def validate_uuid4(uuid4 = ""):
     return uuid4
 
 ##############################
-RESTAURANT_NAME_MIN = 2
-RESTAURANT_NAME_MAX = 20
-RESTAURANT_NAME_REGEX = f"^.{{{RESTAURANT_NAME_MIN},{RESTAURANT_NAME_MAX}}}$"
-def validate_restaurant_name():
-    error = f"name {RESTAURANT_NAME_MIN} to {RESTAURANT_NAME_MAX} characters"
-    restaurant_name = request.form.get("restaurant_name", "").strip()
-    if not re.match(RESTAURANT_NAME_REGEX, restaurant_name): raise_custom_exception(error, 400)
-    return restaurant_name
-
-##############################
-RESTAURANT_ADRESS_MIN = 2
-RESTAURANT_ADRESS_MAX = 55
-RESTAURANT_ADRESS_REGEX = f"^.{{{RESTAURANT_ADRESS_MIN},{RESTAURANT_ADRESS_MAX}}}$"
-def validate_restaurant_adress():
-    error = f"name {RESTAURANT_ADRESS_MIN} to {RESTAURANT_ADRESS_MAX} characters"
-    restaurant_adress = request.form.get("restaurant_adress", "").strip()
-    if not re.match(RESTAURANT_ADRESS_REGEX, restaurant_adress): raise_custom_exception(error, 400)
-    return restaurant_adress
-
-##############################
-REGEX_EMAIL = "^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
-def validate_restaurant_email():
-    error = "email invalid"
-    restaurant_email = request.form.get("restaurant_email", "").strip()
-    if not re.match(REGEX_EMAIL, restaurant_email): raise_custom_exception(error, 400)
-    return restaurant_email
-
-##############################
-RESTAURANT_PASSWORD_MIN = 8
-RESTAURANT_PASSWORD_MAX = 50
-REGEX_RESTAURANT_PASSWORD = f"^.{{{RESTAURANT_PASSWORD_MIN},{RESTAURANT_PASSWORD_MAX}}}$"
-def validate_restaurant_password():
-    error = f"password {RESTAURANT_PASSWORD_MIN} to {RESTAURANT_PASSWORD_MAX} characters"
-    restaurant_password = request.form.get("restaurant_password", "").strip()
-    if not re.match(REGEX_RESTAURANT_PASSWORD, restaurant_password): raise_custom_exception(error, 400)
-    return restaurant_password
-
-##############################
 ITEM_TITLE_MIN = 2
 ITEM_TITLE_MAX = 50
-REGEX_ITEM_TITLE = f"^.{{{ITEM_TITLE_MIN}, {ITEM_TITLE_MAX}}}$"
+REGEX_ITEM_TITLE = f"^.{{{ITEM_TITLE_MIN},{ITEM_TITLE_MAX}}}$"
 def validate_item_title():
     error = f"Title {ITEM_TITLE_MIN} to {ITEM_TITLE_MAX} characters"
     item_title = request.form.get("item_title", "").strip()
@@ -173,7 +135,7 @@ def validate_item_title():
 ##############################
 ITEM_DESCRIPTION_MIN = 2
 ITEM_DESCRIPTION_MAX = 200
-REGEX_ITEM_DESCRIPTION = f"^.{{{ITEM_DESCRIPTION_MIN}, {ITEM_DESCRIPTION_MAX}}}$"
+REGEX_ITEM_DESCRIPTION = f"^.{{{ITEM_DESCRIPTION_MIN},{ITEM_DESCRIPTION_MAX}}}$"
 def validate_item_description():
     error = f"Description {ITEM_DESCRIPTION_MIN} to {ITEM_DESCRIPTION_MAX} characters"
     item_description = request.form.get("item_description", "").strip()
@@ -181,14 +143,13 @@ def validate_item_description():
     return item_description
 
 ##############################
-ITEM_PRICE_MIN = 0
-ITEM_PRICE_MAX = 99999
-REGEX_ITEM_PRICE = f"^.{{{ITEM_PRICE_MIN}, {ITEM_PRICE_MAX}}}$"
+PRICE_MAX_DECIMALS = 5
+PRICE_REGEX = fr"^\d+(\.\d{{1,{PRICE_MAX_DECIMALS}}})?$"
 def validate_item_price():
-    error = f"Price must be {ITEM_PRICE_MIN} to {ITEM_PRICE_MAX} decimals"
+    error = f"Price must be a number up to {PRICE_REGEX} decimals"
     item_price = request.form.get("item_price", "").strip()
-    if not re.match(REGEX_ITEM_PRICE, item_price): raise_custom_exception(error, 400)
-    return item_price
+    if not item_price or not re.match(PRICE_REGEX, item_price): raise_custom_exception(error, 400)
+    return float(item_price)
 
 
 ##############################

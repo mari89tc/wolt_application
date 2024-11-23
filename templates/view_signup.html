@@ -4,7 +4,7 @@
     {% if id=="c56a4180-65aa-42ec-a945-5fd21dec0538": %}
         <h2 class="text-(3rem) text-a-center">Sign up here as customer</h2>
         <form id="frm_user_signup" class="w-40% d-flex flex-col gap-4 mx-auto">
-
+            <input type="hidden" name="role" value="c56a4180-65aa-42ec-a945-5fd21dec0538">
             <div class="d-flex flex-col">
                 <label for="user_name" class="d-flex">
                     <span>Name</span>
@@ -50,10 +50,11 @@
 
         </form>
     {% endif %}
-    <!-- {% if id=="f47ac10b-58cc-4372-a567-0e02b2c3d479": %}
-        <h2 class="text-(3rem) text-a-center">Sign up here as Partner</h2>
+
+    {% if id=="f47ac10b-58cc-4372-a567-0e02b2c3d479": %}
+        <h2 class="text-(3rem) text-a-center">Sign up here as partner</h2>
         <form id="frm_user_signup" class="w-40% d-flex flex-col gap-4 mx-auto">
-
+            <input type="hidden" name="role" value="f47ac10b-58cc-4372-a567-0e02b2c3d479">
             <div class="d-flex flex-col">
                 <label for="user_name" class="d-flex">
                     <span>Name</span>
@@ -99,55 +100,56 @@
 
         </form>
     {% endif %}
+
     {% if id=="9f8c8d22-5a67-4b6c-89d7-58f8b8cb4e15": %}
-        <h2 class="text-(3rem) text-a-center">Sign up here as Restaurant</h2>
-        <form id="frm_restaurant_signup" class="w-40% d-flex flex-col gap-4 mx-auto">
+    <h2 class="text-(3rem) text-a-center">Sign up here as restaurant</h2>
+    <form id="frm_user_signup" class="w-40% d-flex flex-col gap-4 mx-auto">
+        <input type="hidden" name="role" value="9f8c8d22-5a67-4b6c-89d7-58f8b8cb4e15">
+        <div class="d-flex flex-col">
+            <label for="user_name" class="d-flex">
+                <span>Restaurant name</span>
+                <span class="ml-auto text-c-gray:+25">{{ x.USER_NAME_MIN }} to {{ x.USER_NAME_MAX }}
+                    characters
+                </span>
+            </label>
+            <input name="user_name" type="text" mix-check="{{ x.USER_NAME_REGEX }}">
+        </div>
 
-            <div class="d-flex flex-col">
-                <label for="restaurant_name" class="d-flex">
-                    <span>Restaurant name</span>
-                    <span class="ml-auto text-c-gray:+25">{{ x.USER_NAME_MIN }} to {{ x.USER_NAME_MAX }}
-                        characters
-                    </span>
-                </label>
-                <input name="restaurant_name" type="text" mix-check="{{ x.USER_NAME_REGEX }}">
-            </div>
+        <div class="d-flex flex-col">
+            <label for="user_last_name" class="d-flex">
+                <span>Adress</span>
+                <span class="ml-auto text-c-gray:+25">{{ x.USER_LAST_NAME_MIN }} to {{ x.USER_LAST_NAME_MAX }}
+                    characters
+                </span>
+            </label>
+            <input name="user_last_name" type="text" mix-check="{{ x.USER_LAST_NAME_REGEX }}">
+        </div>
 
-            <div class="d-flex flex-col">
-                <label for="restaurant_adress" class="d-flex">
-                    <span>Adress</span>
-                    <span class="ml-auto text-c-gray:+25">{{ x.USER_LAST_NAME_MIN }} to {{ x.USER_LAST_NAME_MAX }}
-                        characters
-                    </span>
-                </label>
-                <input name="restaurant_adress" type="text" mix-check="{{ x.USER_LAST_NAME_REGEX }}">
-            </div>
+        <div class="d-flex flex-col">
+            <label for="user_email">
+                <span>E-mail</span>
+            </label>
+            <input name="user_email" type="text" mix-check="{{ x.REGEX_EMAIL }}">
+        </div>
 
-            <div class="d-flex flex-col">
-                <label for="restaurant_email">
-                    <span>E-mail</span>
-                </label>
-                <input name="restaurant_email" type="text" mix-check="{{ x.REGEX_EMAIL }}">
-            </div>
+        <div class="d-flex flex-col">
+            <label for="user_password" class="d-flex">
+                <span>Password</span>
+                <span class="ml-auto text-c-gray:+25">{{ x.USER_PASSWORD_MIN }} to {{ x.USER_PASSWORD_MAX }}
+                    characters</span>
+            </label>
+            <input name="user_password" type="text" mix-check="{{ x.REGEX_USER_PASSWORD }}">
+        </div>
 
-            <div class="d-flex flex-col">
-                <label for="restaurant_password" class="d-flex">
-                    <span>Password</span>
-                    <span class="ml-auto text-c-gray:+25">{{ x.USER_PASSWORD_MIN }} to {{ x.USER_PASSWORD_MAX }}
-                        characters</span>
-                </label>
-                <input name="user_password" type="text" mix-check="{{ x.REGEX_USER_PASSWORD }}">
-            </div>
+        <button mix-post="/users" mix-data="#frm_user_signup"
+            class="bg-c-(#EBF7FD) text-c-(#00C2E8) px-4 py-2 rounded-3">
+            Sign up
+        </button>
 
-            <button mix-post="/restaurant" mix-data="#frm_restaurant_signup"
-                class="bg-c-(#EBF7FD) text-c-(#00C2E8) px-4 py-2 rounded-3">
-                Sign up
-            </button>
+        <a href="{{url_for('view_login')}}" class="text-a-center text-c-(#202125)">Login</a>
 
-            <a href="{{url_for('view_login')}}" class="text-a-center text-c-(#202125)">Login</a>
-
-        </form>
-    {% endif %} -->
+    </form>
+    {% endif %}
 
 </main>
 

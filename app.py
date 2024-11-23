@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template, redirect, url_for, make_response, request
+from flask import Flask, session, render_template, redirect, url_for, make_response, request, send_from_directory
 from flask_session import Session
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
@@ -28,9 +28,9 @@ def _________GET_________(): pass
 ##############################
 
 ##############################
-# @app.get("/images/<image_id>")
-# def view_image(image_id):
-#     return send_from_directory("./images", image_id)
+@app.get("/images/<image_id>")
+def view_image(image_id):
+    return send_from_directory("./images", image_id)
 
 
 
@@ -78,12 +78,12 @@ def view_signup():
     # if session.get("user"):
     #     if len(session.get("user").get("roles")) > 1:
     #         return redirect(url_for("view_choose_role")) 
-    #     if "admin" in session.get("user").get("roles"):
-    #         return redirect(url_for("view_admin"))
+    #     if "restaurant" in session.get("user").get("roles"):
+    #         return redirect(url_for("view_restaurant_page"))
     #     if "customer" in session.get("user").get("roles"):
     #         return redirect(url_for("view_customer")) 
     #     if "partner" in session.get("user").get("roles"):
-    #         return redirect(url_for("view_partner"))         
+    #         return redirect(url_for("view_partner"))  
     return render_template("view_signup.html", x=x, id=id, title="Signup")
 
 
@@ -93,8 +93,8 @@ def view_signup():
 def view_login():  
     ic(session)  
     if session.get("user"):
-        if len(session.get("user").get("roles")) > 1:
-            return redirect(url_for("view_choose_role")) 
+        # if len(session.get("user").get("roles")) > 1:
+        #     return redirect(url_for("view_choose_role")) 
         if "admin" in session.get("user").get("roles"):
             return redirect(url_for("view_admin"))
         if "customer" in session.get("user").get("roles"):
@@ -111,8 +111,8 @@ def view_customer():
     if not session.get("user", ""): 
         return redirect(url_for("view_login"))
     user = session.get("user")
-    if len(user.get("roles", "")) > 1:
-        return redirect(url_for("view_choose_role"))
+    # if len(user.get("roles", "")) > 1:
+    #     return redirect(url_for("view_choose_role"))
     return render_template("view_customer.html", user=user)
 
 ##############################
@@ -122,8 +122,8 @@ def view_partner():
     if not session.get("user", ""): 
         return redirect(url_for("view_login"))
     user = session.get("user")
-    if len(user.get("roles", "")) > 1:
-        return redirect(url_for("view_choose_role"))
+    # if len(user.get("roles", "")) > 1:
+    #     return redirect(url_for("view_choose_role"))
     return render_template("view_partner.html", user=user)
 
 
@@ -134,8 +134,8 @@ def view_admin():
     if not session.get("user", ""): 
         return redirect(url_for("view_login"))
     user = session.get("user")
-    if not "admin" in user.get("roles", ""):
-        return redirect(url_for("view_login"))
+    # if not "admin" in user.get("roles", ""):
+    #     return redirect(url_for("view_login"))
     
     db, cursor = x.db()
     cursor.execute("SELECT * FROM users ORDER BY user_created_at DESC") #Get all users
@@ -145,17 +145,32 @@ def view_admin():
     items = cursor.fetchall()
     return render_template("view_admin.html", user=user, users=users, items=items)
 
-
 ##############################
-@app.get("/choose-role")
+@app.get("/restaurant")
 @x.no_cache
-def view_choose_role():
-    if not session.get("user", ""): 
-        return redirect(url_for("view_login"))
-    if not len(session.get("user").get("roles")) >= 2:
+def view_restaurant_page():
+    if not session.get("user", ""):
         return redirect(url_for("view_login"))
     user = session.get("user")
-    return render_template("view_choose_role.html", user=user, title="Choose role")
+    if not "restaurant" in user.get("roles", ""):
+        return redirect(url_for("view_login"))
+
+    db, cursor = x.db()
+    cursor.execute("SELECT * FROM items ORDER BY item_created_at DESC") #Get all items
+    items = cursor.fetchall()
+    return render_template("view_restaurant_page.html", user=user, x=x, title="Restaurant page", items=items)
+
+
+##############################
+# @app.get("/choose-role")
+# @x.no_cache
+# def view_choose_role():
+#     if not session.get("user", ""): 
+#         return redirect(url_for("view_login"))
+#     if not len(session.get("user").get("roles")) >= 2:
+#         return redirect(url_for("view_login"))
+#     user = session.get("user")
+#     return render_template("view_choose_role.html", user=user, title="Choose role")
 
 
 ##############################
@@ -176,21 +191,12 @@ def view_reset_password():
 @app.get("/restaurants")
 @x.no_cache
 def view_restaurants():
-    return render_template("view_restaurants.html", x=x, title="Restaurants")
-
-
-##############################
-@app.get("/restaurant")
-@x.no_cache
-def view_restaurant_page():
-    if not session.get("user", ""):
-        return redirect(url_for("view_login"))
-    user = session.get("user")
-
     db, cursor = x.db()
-    cursor.execute("SELECT * FROM items ORDER BY item_created_at DESC") #Get all items
-    items = cursor.fetchall()
-    return render_template("view_restaurant_page.html", user=user, x=x, title="Restaurant page", items=items)
+    cursor.execute("SELECT * FROM users ORDER BY user_created_at DESC")
+    users = cursor.fetchall()
+    return render_template("view_restaurants.html", x=x, title="Restaurants", users=users)
+
+
 
 ##############################
 ##############################
@@ -224,7 +230,11 @@ def signup():
         user_email = x.validate_user_email()
         user_password = x.validate_user_password()
         hashed_password = generate_password_hash(user_password)
-        user_role = "c56a4180-65aa-42ec-a945-5fd21dec0538"
+
+        user_role = request.form.get('role')
+        if not user_role:
+            toast = render_template("___toast.html", message="Role is required")
+            return f"""<template mix-target="#toast">{toast}</template>""", 400
 
         user_pk = str(uuid.uuid4())
         user_avatar = ""
@@ -241,7 +251,7 @@ def signup():
         cursor.execute(q, (user_pk, user_name, user_last_name, user_email,
                             hashed_password, user_avatar, user_created_at, user_deleted_at, user_blocked_at,
                             user_updated_at, user_verified_at, user_verification_key, user_reset_key))
-
+        
         q_role = 'INSERT INTO users_roles (user_role_user_fk, user_role_role_fk) VALUES (%s, %s)'
         cursor.execute(q_role, (user_pk, user_role))
 
@@ -266,8 +276,6 @@ def signup():
     finally:
         if "cursor" in locals(): cursor.close()
         if "db" in locals(): db.close()
-
-##############################
 
 
 ##############################
@@ -333,7 +341,7 @@ def login():
         session["user"] = user
         if len(roles) == 1:
             return f"""<template mix-redirect="/{roles[0]}"></template>"""
-        return f"""<template mix-redirect="/choose-role"></template>"""
+        return f"""<template mix-redirect="/login"></template>"""
     except Exception as ex:
         ic(ex)
         if "db" in locals(): db.rollback()
@@ -519,6 +527,17 @@ def user_update():
         cursor.execute(q, (user_name, user_last_name, user_email, user_updated_at, user_pk))
         if cursor.rowcount != 1: x.raise_custom_exception("cannot update user", 401)
         db.commit()
+        user = {
+            "user_pk":user_pk,
+            "user_name": user_name,
+            "user_last_name": user_last_name,
+            "user_email": user_email,
+            "roles": session.get("user").get("roles")
+        }  
+
+        session["user"] = user  
+
+        toast = render_template("___toast_ok.html", message="User updated")
         return """<template>user updated</template>"""
     except Exception as ex:
         ic(ex)
