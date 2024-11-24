@@ -170,6 +170,7 @@ def validate_item_image():
         return file, filename 
 
 ##############################
+#######  Verify your account ######
 def send_verify_email(to_email, user_verification_key):
     try:
         # Create a gmail fullflaskdemomail
@@ -209,20 +210,20 @@ def send_verify_email(to_email, user_verification_key):
         pass
 
 ##############################
+#######  Send new password ######
 def send_new_password_email(user_email, user_reset_key):
     try:
         # Create a gmail
         # Enable (turn on) 2 step verification/factor in the google account manager
         # Visit: https://myaccount.google.com/apppasswords
-        # Copy the key : wdwr rqrx wllv gtcu OLD
-        # Copy the key : xbhw jbez dxvw mtfa  NEW
+        # Our key/password: azjmqclantfsriud
 
         # Email and password of the sender's Gmail account
-        sender_email = "fullflaskdemomailexam@gmail.com"
-        password = "gvzplqajyxalzyhv"  # If 2FA is on, use an App Password instead
+        sender_email = "fulldemoexam@gmail.com"
+        password = "azjmqclantfsriud"  # If 2FA is on, use an App Password instead
 
         # Receiver email address - Right now set to be my own
-        receiver_email = "fullflaskdemomailexam@gmail.com"
+        receiver_email = "fulldemoexam@gmail.com"
         # receiver_email = user_email # if it was a real scenario
         
         # Create the email message
@@ -249,3 +250,43 @@ def send_new_password_email(user_email, user_reset_key):
         raise_custom_exception("Email can't send", 500)
     finally:
         pass
+
+##############################
+#######  Confirm user delete ######
+# def send_delete_user_email(user_pk, user_deleted_at):
+#     try:
+#         # Create a gmail fullflaskdemomail
+#         # Enable (turn on) 2 step verification/factor in the google account manager
+#         # Visit: https://myaccount.google.com/apppasswords
+#         # Our key/password: azjmqclantfsriud
+
+#         # Email and password of the sender's Gmail account
+#         sender_email = "fulldemoexam@gmail.com"
+#         password = "azjmqclantfsriud"  # If 2FA is on, use an App Password instead
+
+#         # Receiver email address
+#         receiver_email = "fulldemoexam@gmail.com"
+        
+#         # Create the email message
+#         message = MIMEMultipart()
+#         message["From"] = "My company name"
+#         message["To"] = receiver_email
+#         message["Subject"] = "Do you want to delete your account?"
+
+#         # Body of the email
+#         body = f"""To delete your account, please <a href="http://127.0.0.1/verify/{user_deleted_at}">click here</a>"""
+#         message.attach(MIMEText(body, "html"))
+
+#         # Connect to Gmail's SMTP server and send the email
+#         with smtplib.SMTP("smtp.gmail.com", 587) as server:
+#             server.starttls()  # Upgrade the connection to secure
+#             server.login(sender_email, password)
+#             server.sendmail(sender_email, receiver_email, message.as_string())
+#         print("Email sent successfully!")
+
+#         return "email sent"
+
+#     except Exception as ex:
+#         raise_custom_exception("cannot send email", 500)
+#     finally:
+#         pass

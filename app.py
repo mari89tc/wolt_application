@@ -196,7 +196,15 @@ def view_restaurants():
     users = cursor.fetchall()
     return render_template("view_restaurants.html", x=x, title="Restaurants", users=users)
 
+##############################
+@app.get("/profile")
+@x.no_cache
+def view_profile():
+    if not session.get("user", ""): 
+        return redirect(url_for("view_login"))
+    user = session.get("user")
 
+    return render_template("view_profile.html", x=x, title="Profile", user=user)
 
 ##############################
 ##############################
@@ -738,7 +746,7 @@ def _________DELETE_________(): pass
 ##############################
 ##############################
 
-
+##############################
 @app.delete("/users/<user_pk>")
 def user_delete(user_pk):
     try:
@@ -756,7 +764,6 @@ def user_delete(user_pk):
         return """<template>user deleted</template>"""
     
     except Exception as ex:
-
         ic(ex)
         if "db" in locals(): db.rollback()
         if isinstance(ex, x.CustomException): 
@@ -771,7 +778,35 @@ def user_delete(user_pk):
         if "db" in locals(): db.close()
 
 
-
+##############################
+@app.delete("/items/<item_pk>")
+def item_delete():
+    try:
+        # Check if user is logged
+        if not session.get("user", ""): return redirect(url_for("view_login"))
+        # Check if it is an partner????
+        if not "partner" in session.get("user").get("roles"): return redirect(url_for("view_login"))
+        item_pk = x.validate_uuid4(item_pk)
+        item_deleted_at = int(time.time())
+        db, cursor = x.db()
+        q = 'UPDATE items SET item_deleted_at = %s WHERE item_pk = %s'
+        cursor.execute(q, (item_deleted_at, item_pk))
+        if cursor.rowcount != 1: x.raise_custom_exception("cannot delete item", 400)
+        db.commit()
+        return """<template>item deleted</template>"""
+    except Exception as ex:
+        ic(ex)
+        if "db" in locals(): db.rollback()
+        if isinstance(ex, x.CustomException): 
+            return f"""<template mix-target="#toast" mix-bottom>{ex.message}</template>""", ex.code        
+        if isinstance(ex, x.mysql.connector.Error):
+            ic(ex)
+            return "<template>Database error</template>", 500        
+        return "<template>System under maintenance</template>", 500  
+    
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()
 
 ##############################
 ##############################
